@@ -1,15 +1,15 @@
 package br.com.bemobi.shortener.model;
 
-public class ShortUrlViewModel {
+public class ShortUrlModel {
 	private String url;
 	private String alias;
-	private StatisticsViewModel statistics;
+	private StatisticsModel statistics;
 	
-	public ShortUrlViewModel(String url, String alias, String time_taken) {
+	public ShortUrlModel(String url, String alias, String time_taken) {
 		super();
 		this.url = url;
 		this.alias = alias;
-		this.statistics = new StatisticsViewModel(time_taken);
+		this.statistics = new StatisticsModel(time_taken);
 	}
 
 	public String getUrl() {
@@ -20,7 +20,7 @@ public class ShortUrlViewModel {
 		return alias;
 	}
 
-	public StatisticsViewModel getStatistics() {
+	public StatisticsModel getStatistics() {
 		return statistics;
 	}
 }

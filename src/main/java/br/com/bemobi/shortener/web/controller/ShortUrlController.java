@@ -17,7 +17,9 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import br.com.bemobi.shortener.domain.entity.ShortUrl;
 import br.com.bemobi.shortener.domain.repository.ShortUrlRepository;
-import br.com.bemobi.shortener.model.ShortUrlViewModel;
+import br.com.bemobi.shortener.model.AliasErrorModel;
+import br.com.bemobi.shortener.model.ErrorModel;
+import br.com.bemobi.shortener.model.ShortUrlModel;
 import br.com.bemobi.shortener.util.CustomBase64;
 
 @RestController
@@ -57,13 +59,16 @@ public class ShortUrlController {
 	*/
 	
 	@PutMapping("/create")
-	public ShortUrlViewModel create(@RequestParam(value="url", required=true) String url, @RequestParam(value="CUSTOM_ALIAS", required=false, defaultValue="") String customAlias) {
+	public ResponseEntity<?> create(@RequestParam(value="url", required=true) String url, @RequestParam(value="CUSTOM_ALIAS", required=false, defaultValue="") String customAlias) {
 		long startTime = System.currentTimeMillis();
 		String alias = customAlias;
 		
 		if (alias.isEmpty()) {
-			// TODO: Verificar colisão
 			alias = new CustomBase64().convertFromLong(System.currentTimeMillis());
+		}
+		
+		if (shortUrlRepository.findByAlias(alias).size() > 0) {
+			return ResponseEntity.ok(new AliasErrorModel("001", "CUSTOM ALIAS ALREADY EXISTS", alias));
 		}
 		
 		ShortUrl shortUrl = new ShortUrl();
@@ -75,7 +80,7 @@ public class ShortUrlController {
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 	
-		return new ShortUrlViewModel(shortUrl.getUrl(), shortUrl.getAlias(), String.format("%dms", elapsedTime));
+		return ResponseEntity.ok(new ShortUrlModel(shortUrl.getUrl(), shortUrl.getAlias(), String.format("%dms", elapsedTime)));
 	}
 	
 	@GetMapping("/{alias}")
@@ -88,11 +93,16 @@ public class ShortUrlController {
 		}
 		
 		// TODO: Não achou
-		return new RedirectView("test");
+		return new RedirectView("/notFound/{alias}");
+	}
+	
+	@GetMapping("/notFound/{alias}")
+	public ResponseEntity<?> notFound(@PathVariable String alias) {
+		return ResponseEntity.ok(new ErrorModel("002", "SHORTENED URL NOT FOUND"));
 	}
 	
 	@GetMapping("/test")
-	public ShortUrlViewModel test() {
+	public ShortUrlModel test() {
 		long startTime = System.currentTimeMillis();
 		try {
 			Thread.sleep(250);
@@ -102,7 +112,7 @@ public class ShortUrlController {
 		}
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-		ShortUrlViewModel successOperation = new ShortUrlViewModel("http://www.google.com", "ggl", String.format("%dms", elapsedTime));
+		ShortUrlModel successOperation = new ShortUrlModel("http://www.google.com", "ggl", String.format("%dms", elapsedTime));
 		return successOperation;
 	}
 }

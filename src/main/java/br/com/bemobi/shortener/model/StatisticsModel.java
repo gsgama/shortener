@@ -1,9 +1,9 @@
 package br.com.bemobi.shortener.model;
 
-public class StatisticsViewModel {
+public class StatisticsModel {
 	private String time_taken;
 
-	public StatisticsViewModel(String time_taken) {
+	public StatisticsModel(String time_taken) {
 		super();
 		this.time_taken = time_taken;
 	}
