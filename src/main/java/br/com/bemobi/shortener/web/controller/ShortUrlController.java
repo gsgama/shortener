@@ -49,7 +49,7 @@ public class ShortUrlController {
 	
 	@GetMapping("/{alias}")
 	public ModelAndView retrieve(@PathVariable String alias) {
-		Optional<ShortUrl> shortUrl = shortUrlService.retrieveShortenedUrl(alias);
+		Optional<ShortUrl> shortUrl = shortUrlService.retrieveUrl(alias);
 		
 		if (shortUrl.isPresent()) {
 			return new ModelAndView("redirect:" + shortUrl.get().getUrl());

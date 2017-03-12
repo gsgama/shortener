@@ -8,6 +8,7 @@ public class ShortUrl {
 	private String id;
 	private String url;
 	private String alias;
+	private long accesses;
 
 	public String getId() {
 		return id;
@@ -32,5 +33,12 @@ public class ShortUrl {
 	public void setAlias(String alias) {
 		this.alias = alias;
 	}
-
+	
+	public long getAccesses() {
+		return accesses;
+	}
+	
+	public void setAccesses(Long accesses) {
+		this.accesses = accesses;
+	}
 }

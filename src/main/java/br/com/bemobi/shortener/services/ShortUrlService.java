@@ -4,12 +4,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.bemobi.shortener.domain.entity.ShortUrl;
 import br.com.bemobi.shortener.domain.repository.ShortUrlRepository;
 import br.com.bemobi.shortener.util.CustomBase64;
 
 @Component
+@Transactional
 public class ShortUrlService {
 	@Autowired
 	private ShortUrlRepository shortUrlRepository;
@@ -31,7 +33,15 @@ public class ShortUrlService {
 		return Optional.of(shortUrlRepository.save(shortUrl));
 	}
 	
-	public Optional<ShortUrl> retrieveShortenedUrl(String alias) {
-		return shortUrlRepository.findByAlias(alias);
+	public Optional<ShortUrl> retrieveUrl(String alias) {
+		Optional<ShortUrl> shortUrl = shortUrlRepository.findByAlias(alias);
+		
+		if (shortUrl.isPresent()) {
+			ShortUrl shortUrlToUpdate = shortUrl.get(); 
+			shortUrlToUpdate.setAccesses(shortUrlToUpdate.getAccesses() + 1);
+			shortUrl = Optional.of(shortUrlRepository.save(shortUrlToUpdate));
+		}
+		
+		return shortUrl;
 	}
 }
