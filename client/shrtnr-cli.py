@@ -18,17 +18,20 @@ def do_request(method, url):
 	return json.loads(data)
 
 def most_accessed():
-	urls = do_request("GET", API_ENDPOINT + "/most-viewed")
-	for url in urls:
+	results = do_request("GET", API_ENDPOINT + "/most-viewed")
+	for url in results:
 		print unicode(url['accesses']) + " " + url['url']
 
-def shorten_url(url):
-	url = do_request("PUT", SHORTENER_ENDPOINT + "/create?url=" + url)
-	print "http://" + HOST + "/" + url['alias']
+def shorten_url(url, alias=None):
+	url = SHORTENER_ENDPOINT + "/create?url=" + url
+	if alias:
+		url += "&CUSTOM_ALIAS="	+ alias
+	result = do_request("PUT", url)
+	print "http://" + HOST + "/" + result['alias']
 
 def expand_url(alias):
-	url = do_request("GET", API_ENDPOINT + "/filter?alias=" + alias)
-	print url['url']
+	result = do_request("GET", API_ENDPOINT + "/filter?alias=" + alias)
+	print result['url']
 
 def main():
 	import argparse
@@ -41,6 +44,8 @@ def main():
 
 	if args.most_accessed:
 		most_accessed()
+	elif args.url and args.alias:
+		shorten_url(args.url, args.alias)
 	elif args.alias:
 		expand_url(args.alias)
 	elif args.url:
