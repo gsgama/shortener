@@ -1,6 +1,7 @@
 package br.com.bemobi.shortener.web.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -86,11 +87,10 @@ public class ShortUrlController {
 	
 	@GetMapping("/{alias}")
 	public ModelAndView retrieve(@PathVariable String alias) {
-		List<ShortUrl> shortUrls = shortUrlRepository.findByAlias(alias);
+		Optional<ShortUrl> shortUrl = shortUrlRepository.findByAlias(alias);
 		
-		if (shortUrls.size() >= 1) {
-			// TODO: Não virá mais de um resultado, então somente o primeiro é recuperado.
-			return new ModelAndView("redirect:" + shortUrls.get(0).getUrl());
+		if (shortUrl.isPresent()) {
+			return new ModelAndView("redirect:" + shortUrl.get().getUrl());
 		}
 		
 		return new ModelAndView("forward:/notFound/" + alias);
