@@ -26,12 +26,13 @@ public class ShortUrlController {
 	@Autowired
 	private ShortUrlRepository shortUrlRepository;
 	
-	/*
-	@GetMapping
+	
+	@GetMapping("/all")
 	public List<ShortUrl> list() {
 		return shortUrlRepository.findAll();
 	}
 
+	/*
 	@GetMapping("/{id}")
 	public ShortUrl get(@PathVariable String id) {
 		return shortUrlRepository.findOne(id);
@@ -62,13 +63,24 @@ public class ShortUrlController {
 			alias = "Xsaxa";
 		}
 		
+		//url += shortUrlRepository.count();
+		
 		ShortUrlViewModel successOperation = new ShortUrlViewModel(url, alias, String.format("%dms", 1));
 		return successOperation;
 	}
 	
 	@GetMapping("/{alias}")
 	public RedirectView retrieve(@PathVariable String alias) {
-		return new RedirectView("http://www.bemobi.com.br");
+		List<ShortUrl> shortUrls = shortUrlRepository.findByAlias(alias);
+		
+		if (shortUrls.size() >= 1) {
+			// Não virá mais de um resultado, então somente o primeiro é recuperado.
+			return new RedirectView(shortUrls.get(0).getUrl());
+			
+		}
+		
+		// Não achou
+		return new RedirectView("test");
 	}
 	
 	@GetMapping("/test")
