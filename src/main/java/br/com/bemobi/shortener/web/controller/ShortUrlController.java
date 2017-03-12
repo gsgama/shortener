@@ -69,7 +69,7 @@ public class ShortUrlController {
 			alias = new CustomBase64().convertFromLong(System.currentTimeMillis());
 		}
 		
-		if (shortUrlRepository.findByAlias(alias).size() > 0) {
+		if (shortUrlRepository.findByAlias(alias).isPresent()) {
 			return ResponseEntity.ok(new AliasErrorModel("001", "CUSTOM ALIAS ALREADY EXISTS", alias));
 		}
 		
