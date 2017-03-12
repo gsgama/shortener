@@ -34,4 +34,8 @@ public class ApiController {
 		shortUrlRepository.delete(id);
 	}
 
+	@GetMapping("/most-viewed")
+	public List<ShortUrl> mostViewed() {
+		return shortUrlRepository.findTop10ByOrderByAccessesDesc();
+	}
 }
