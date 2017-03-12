@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import br.com.bemobi.shortener.domain.entity.ShortUrl;
 import br.com.bemobi.shortener.domain.repository.ShortUrlRepository;
@@ -25,6 +26,7 @@ public class ShortUrlController {
 	@Autowired
 	private ShortUrlRepository shortUrlRepository;
 	
+	/*
 	@GetMapping
 	public List<ShortUrl> list() {
 		return shortUrlRepository.findAll();
@@ -51,6 +53,7 @@ public class ShortUrlController {
 	public void delete(@PathVariable String id) {
 		shortUrlRepository.delete(id);
 	}
+	*/
 	
 	@PutMapping("/create")
 	public ShortUrlViewModel create(@RequestParam(value="url", required=true) String url, @RequestParam(value="CUSTOM_ALIAS", required=false, defaultValue="") String customAlias) {
@@ -61,6 +64,11 @@ public class ShortUrlController {
 		
 		ShortUrlViewModel successOperation = new ShortUrlViewModel(url, alias, String.format("%dms", 1));
 		return successOperation;
+	}
+	
+	@GetMapping("/{alias}")
+	public RedirectView retrieve(@PathVariable String alias) {
+		return new RedirectView("http://www.bemobi.com.br");
 	}
 	
 	@GetMapping("/test")
