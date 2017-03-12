@@ -58,15 +58,26 @@ public class ShortUrlController {
 	
 	@PutMapping("/create")
 	public ShortUrlViewModel create(@RequestParam(value="url", required=true) String url, @RequestParam(value="CUSTOM_ALIAS", required=false, defaultValue="") String customAlias) {
+		long startTime = System.currentTimeMillis();
 		String alias = customAlias;
+		
 		if (alias.isEmpty()) {
+			// TODO: Gerar o alias
 			alias = "Xsaxa";
 		}
 		
-		//url += shortUrlRepository.count();
+		ShortUrl shortUrl = new ShortUrl();
+		shortUrl.setUrl(url);
+		shortUrl.setAlias(alias);
 		
-		ShortUrlViewModel successOperation = new ShortUrlViewModel(url, alias, String.format("%dms", 1));
-		return successOperation;
+		shortUrlRepository.save(shortUrl);
+		
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		
+	
+		ShortUrlViewModel model = new ShortUrlViewModel(shortUrl.getUrl(), shortUrl.getAlias(), String.format("%dms", elapsedTime));
+		return model;
 	}
 	
 	@GetMapping("/{alias}")
