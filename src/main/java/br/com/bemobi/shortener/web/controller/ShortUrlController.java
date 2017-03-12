@@ -18,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import br.com.bemobi.shortener.domain.entity.ShortUrl;
 import br.com.bemobi.shortener.domain.repository.ShortUrlRepository;
 import br.com.bemobi.shortener.model.ShortUrlViewModel;
+import br.com.bemobi.shortener.util.CustomBase64;
 
 @RestController
 @RequestMapping("/")
@@ -25,7 +26,6 @@ public class ShortUrlController {
 
 	@Autowired
 	private ShortUrlRepository shortUrlRepository;
-	
 	
 	@GetMapping("/all")
 	public List<ShortUrl> list() {
@@ -62,8 +62,8 @@ public class ShortUrlController {
 		String alias = customAlias;
 		
 		if (alias.isEmpty()) {
-			// TODO: Gerar o alias
-			alias = "Xsaxa";
+			// TODO: Verificar colisão
+			alias = new CustomBase64().convertFromLong(System.currentTimeMillis());
 		}
 		
 		ShortUrl shortUrl = new ShortUrl();
@@ -74,10 +74,8 @@ public class ShortUrlController {
 		
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-		
 	
-		ShortUrlViewModel model = new ShortUrlViewModel(shortUrl.getUrl(), shortUrl.getAlias(), String.format("%dms", elapsedTime));
-		return model;
+		return new ShortUrlViewModel(shortUrl.getUrl(), shortUrl.getAlias(), String.format("%dms", elapsedTime));
 	}
 	
 	@GetMapping("/{alias}")
@@ -85,12 +83,11 @@ public class ShortUrlController {
 		List<ShortUrl> shortUrls = shortUrlRepository.findByAlias(alias);
 		
 		if (shortUrls.size() >= 1) {
-			// Não virá mais de um resultado, então somente o primeiro é recuperado.
+			// TODO: Não virá mais de um resultado, então somente o primeiro é recuperado.
 			return new RedirectView(shortUrls.get(0).getUrl());
-			
 		}
 		
-		// Não achou
+		// TODO: Não achou
 		return new RedirectView("test");
 	}
 	
