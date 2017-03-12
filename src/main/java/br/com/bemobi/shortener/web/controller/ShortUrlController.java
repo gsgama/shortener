@@ -1,6 +1,5 @@
 package br.com.bemobi.shortener.web.controller;
 
-import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +11,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.bemobi.shortener.domain.entity.ShortUrl;
 import br.com.bemobi.shortener.domain.repository.ShortUrlRepository;
-import br.com.bemobi.shortener.model.SuccessOperationModel;
+import br.com.bemobi.shortener.model.ShortUrlViewModel;
 
 @RestController
-@RequestMapping("/urls")
+@RequestMapping("/")
 public class ShortUrlController {
 
 	@Autowired
@@ -52,8 +52,19 @@ public class ShortUrlController {
 		shortUrlRepository.delete(id);
 	}
 	
+	@PutMapping("/create")
+	public ShortUrlViewModel create(@RequestParam(value="url", required=true) String url, @RequestParam(value="CUSTOM_ALIAS", required=false, defaultValue="") String customAlias) {
+		String alias = customAlias;
+		if (alias.isEmpty()) {
+			alias = "Xsaxa";
+		}
+		
+		ShortUrlViewModel successOperation = new ShortUrlViewModel(url, alias, String.format("%dms", 1));
+		return successOperation;
+	}
+	
 	@GetMapping("/test")
-	public SuccessOperationModel test() {
+	public ShortUrlViewModel test() {
 		long startTime = System.currentTimeMillis();
 		try {
 			Thread.sleep(250);
@@ -63,7 +74,7 @@ public class ShortUrlController {
 		}
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-		SuccessOperationModel successOperation = new SuccessOperationModel("http://www.google.com", "ggl", String.format("%dms", elapsedTime));
+		ShortUrlViewModel successOperation = new ShortUrlViewModel("http://www.google.com", "ggl", String.format("%dms", elapsedTime));
 		return successOperation;
 	}
 }
