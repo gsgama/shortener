@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.bemobi.shortener.domain.entity.ShortUrl;
-import br.com.bemobi.shortener.domain.repository.ShortUrlRepository;
 import br.com.bemobi.shortener.model.AliasErrorModel;
 import br.com.bemobi.shortener.model.ErrorModel;
 import br.com.bemobi.shortener.model.ShortUrlModel;
@@ -22,9 +21,6 @@ import br.com.bemobi.shortener.services.ShortUrlService;
 @RestController
 @RequestMapping("/")
 public class ShortUrlController {
-
-	@Autowired
-	private ShortUrlRepository shortUrlRepository;
 	
 	@Autowired
 	private ShortUrlService shortUrlService;
@@ -53,7 +49,7 @@ public class ShortUrlController {
 	
 	@GetMapping("/{alias}")
 	public ModelAndView retrieve(@PathVariable String alias) {
-		Optional<ShortUrl> shortUrl = shortUrlRepository.findByAlias(alias);
+		Optional<ShortUrl> shortUrl = shortUrlService.retrieveShortenedUrl(alias);
 		
 		if (shortUrl.isPresent()) {
 			return new ModelAndView("redirect:" + shortUrl.get().getUrl());

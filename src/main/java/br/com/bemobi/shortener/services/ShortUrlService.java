@@ -30,4 +30,8 @@ public class ShortUrlService {
 		
 		return Optional.of(shortUrlRepository.save(shortUrl));
 	}
+	
+	public Optional<ShortUrl> retrieveShortenedUrl(String alias) {
+		return shortUrlRepository.findByAlias(alias);
+	}
 }
