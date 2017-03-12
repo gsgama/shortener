@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import br.com.bemobi.shortener.domain.entity.ShortUrl;
@@ -84,16 +85,15 @@ public class ShortUrlController {
 	}
 	
 	@GetMapping("/{alias}")
-	public RedirectView retrieve(@PathVariable String alias) {
+	public ModelAndView retrieve(@PathVariable String alias) {
 		List<ShortUrl> shortUrls = shortUrlRepository.findByAlias(alias);
 		
 		if (shortUrls.size() >= 1) {
 			// TODO: Não virá mais de um resultado, então somente o primeiro é recuperado.
-			return new RedirectView(shortUrls.get(0).getUrl());
+			return new ModelAndView("redirect:" + shortUrls.get(0).getUrl());
 		}
 		
-		// TODO: Não achou
-		return new RedirectView("/notFound/{alias}");
+		return new ModelAndView("forward:/notFound/" + alias);
 	}
 	
 	@GetMapping("/notFound/{alias}")
