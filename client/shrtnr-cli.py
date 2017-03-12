@@ -8,36 +8,31 @@ HOST = 'localhost:8080'
 SHORTENER_ENDPOINT = '/'
 API_ENDPOINT = '/api'
 
-def most_accessed():
+def do_request(method, url):
 	conn = httplib.HTTPConnection(HOST)
-	conn.request("GET", API_ENDPOINT + "/most-viewed");
+	conn.request(method, url);
 	resp = conn.getresponse()
 	data = resp.read()
-	urls = json.loads(data)
+	conn.close()
+
+	return json.loads(data)
+
+def most_accessed():
+	urls = do_request("GET", API_ENDPOINT + "/most-viewed")
 	for url in urls:
 		print unicode(url['accesses']) + " " + url['url']
-	conn.close()
 
 def shorten_url(url):
-	conn = httplib.HTTPConnection(HOST)
-	conn.request("PUT", SHORTENER_ENDPOINT + "/create?url=" + url);
-	resp = conn.getresponse()
-	data = resp.read()
-	url = json.loads(data)
+	url = do_request("PUT", SHORTENER_ENDPOINT + "/create?url=" + url)
 	print "http://" + HOST + "/" + url['alias']
-	conn.close()
 
 def expand_url(alias):
-	conn = httplib.HTTPConnection(HOST)
-	conn.request("GET", API_ENDPOINT + "/filter?alias=" + alias);
-	resp = conn.getresponse()
-	data = resp.read()
-	url = json.loads(data)
+	url = do_request("GET", API_ENDPOINT + "/filter?alias=" + alias)
 	print url['url']
-	conn.close()
 
 def main():
 	import argparse
+
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-u", "--url", help="Enter a url to shorten")
 	parser.add_argument("-a", "--alias", help="Enter an alias to expand")
