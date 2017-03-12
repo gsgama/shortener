@@ -17,7 +17,7 @@ import br.com.bemobi.shortener.domain.repository.ShortUrlRepository;
 import br.com.bemobi.shortener.model.AliasErrorModel;
 import br.com.bemobi.shortener.model.ErrorModel;
 import br.com.bemobi.shortener.model.ShortUrlModel;
-import br.com.bemobi.shortener.util.CustomBase64;
+import br.com.bemobi.shortener.services.ShortUrlService;
 
 @RestController
 @RequestMapping("/")
@@ -26,29 +26,29 @@ public class ShortUrlController {
 	@Autowired
 	private ShortUrlRepository shortUrlRepository;
 	
+	@Autowired
+	private ShortUrlService shortUrlService;
+	
 	@PutMapping("/create")
 	public ResponseEntity<?> create(@RequestParam(value="url", required=true) String url, @RequestParam(value="CUSTOM_ALIAS", required=false, defaultValue="") String customAlias) {
 		long startTime = System.currentTimeMillis();
-		String alias = customAlias;
+		Optional<ShortUrl> shortUrl;
 		
-		if (alias.isEmpty()) {
-			alias = new CustomBase64().convertFromLong(System.currentTimeMillis());
+		if (customAlias.isEmpty()) {
+			shortUrl = shortUrlService.shortenUrl(url);
+		} else {
+			shortUrl = shortUrlService.shortenUrl(url, customAlias);	
 		}
 		
-		if (shortUrlRepository.findByAlias(alias).isPresent()) {
-			return ResponseEntity.ok(new AliasErrorModel("001", "CUSTOM ALIAS ALREADY EXISTS", alias));
+		if (!shortUrl.isPresent()) {
+			return ResponseEntity.ok(new AliasErrorModel("001", "CUSTOM ALIAS ALREADY EXISTS", customAlias));
 		}
-		
-		ShortUrl shortUrl = new ShortUrl();
-		shortUrl.setUrl(url);
-		shortUrl.setAlias(alias);
-		
-		shortUrlRepository.save(shortUrl);
 		
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 	
-		return ResponseEntity.ok(new ShortUrlModel(shortUrl.getUrl(), shortUrl.getAlias(), String.format("%dms", elapsedTime)));
+		return ResponseEntity.ok(new ShortUrlModel(shortUrl.get().getUrl(), shortUrl.get().getAlias(),
+				String.format("%dms", elapsedTime)));
 	}
 	
 	@GetMapping("/{alias}")
