@@ -27,6 +27,7 @@ repositories {
 
 
 dependencies {
+	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile("org.springframework.boot:spring-boot-starter-data-mongodb")
 	runtime('org.springframework.boot:spring-boot-devtools')
