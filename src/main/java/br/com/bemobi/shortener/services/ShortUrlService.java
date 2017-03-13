@@ -3,16 +3,17 @@ package br.com.bemobi.shortener.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.bemobi.shortener.domain.entity.ShortUrl;
 import br.com.bemobi.shortener.domain.repository.ShortUrlRepository;
 import br.com.bemobi.shortener.util.CustomBase64;
 
-@Component
+@Service
 @Transactional
 public class ShortUrlService {
+
 	@Autowired
 	private ShortUrlRepository shortUrlRepository;
 	
